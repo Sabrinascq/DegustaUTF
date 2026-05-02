@@ -10,6 +10,21 @@
 
     <div style="display: flex; gap: 50px;">
         <div>
+            <h2>Alunos Cadastrados</h2>
+            <form action="/admin/alunos" method="POST">
+                <input type="text" name="nome_aluno" placeholder="Nome do aluno" required>
+                <input type="email" name="email_aluno" placeholder="E-mail (login)" required>
+                <input type="password" name="senha_aluno" placeholder="Senha provisória" required>
+                <button type="submit">Cadastrar</button>
+            </form>
+            <ul>
+                <% alunos.forEach(aluno => { %>
+                    <li><%= aluno.nome %> (<%= aluno.email %>)</li>
+                <% }) %>
+            </ul>
+        </div>
+        
+        <div>
             <h2>Categorias</h2>
             <form action="/admin/categorias" method="POST">
                 <input type="text" name="nome_categoria" placeholder="Nova categoria..." required>
