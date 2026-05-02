@@ -65,3 +65,5 @@ INSERT INTO habilidades (nome) VALUES
 ('Marinadas e Temperos'),
 ('Molhos de Base'),
 ('Uso de Panela de Pressão');
+
+ALTER TABLE alunos ADD COLUMN eh_admin BOOLEAN DEFAULT false;
