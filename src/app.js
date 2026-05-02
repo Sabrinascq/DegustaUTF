@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const loginController = require('./controllers/loginController');
+const adminController = require('./controllers/adminController');
 
 const app = express();
 
@@ -19,12 +20,20 @@ app.use(session({
 app.get('/login', loginController.renderLogin);
 app.post('/login', loginController.fazerLogin);
 
-app.get('/dashboard', (req, res) => {
+const verificarAdmin = (req, res, next) => {
     if (req.session.usuarioLogado) {
-        res.send(`<h1>Bem-vindo, ${req.session.usuarioLogado.nome}!</h1>`);
+        next();
     } else {
         res.redirect('/login');
     }
+};
+
+app.get('/admin/dashboard', verificarAdmin, adminController.renderDashboard);
+app.post('/admin/categorias', verificarAdmin, adminController.cadastrarCategoria);
+app.post('/admin/habilidades', verificarAdmin, adminController.cadastrarHabilidade);
+
+app.get('/dashboard', (req, res) => {
+    res.redirect('/admin/dashboard');
 });
 
 const PORT = 3000;

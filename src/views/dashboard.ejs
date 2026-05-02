@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Administrativo - DegustaUTF</title>
+</head>
+<body>
+    <h1>Bem-vindo, <%= usuario.nome %>!</h1>
+    <hr>
+
+    <div style="display: flex; gap: 50px;">
+        <div>
+            <h2>Categorias</h2>
+            <form action="/admin/categorias" method="POST">
+                <input type="text" name="nome_categoria" placeholder="Nova categoria..." required>
+                <button type="submit">Adicionar</button>
+            </form>
+            <ul>
+                <% categorias.forEach(categoria => { %>
+                    <li><%= categoria.nome %></li>
+                <% }) %>
+            </ul>
+        </div>
+
+        <div>
+            <h2>Habilidades Culinárias</h2>
+            <form action="/admin/habilidades" method="POST">
+                <input type="text" name="nome_habilidade" placeholder="Nova habilidade..." required>
+                <button type="submit">Adicionar</button>
+            </form>
+            <ul>
+                <% habilidades.forEach(habilidade => { %>
+                    <li><%= habilidade.nome %></li>
+                <% }) %>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
