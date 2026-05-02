@@ -13,7 +13,7 @@ const loginController = {
 
             if (usuario) {
                 req.session.usuarioLogado = usuario;
-                res.redirect('/dashboard');
+                res.redirect('/admin/dashboard');
             } else {
                 res.render('login', { erro: 'Email ou senha inválidos!' });
             }
