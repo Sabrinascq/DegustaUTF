@@ -41,5 +41,27 @@ CREATE TABLE aluno_habilidades (
     PRIMARY KEY (aluno_id, habilidade_id)
 );
 
-INSERT INTO categorias (nome) VALUES ('Sobremesas'), ('Pratos Salgados'), ('Vegana'), ('Massas');
-INSERT INTO habilidades (nome) VALUES ('Corte Julienne'), ('Confeitaria'), ('Molhos de Base');
+INSERT INTO categorias (nome) VALUES 
+('Bebidas e Drinks'),
+('Carnes e Grelhados'),
+('Frutos do Mar'),
+('Lanches Rápidos'),
+('Massas'),
+('Panificação'),
+('Pratos Salgados'),
+('Sobremesas'),
+('Sopas e Caldos'),
+('Vegana');
+
+INSERT INTO habilidades (nome) VALUES 
+('Confeitaria'),
+('Controle de Ponto de Carne'),
+('Corte Julienne'),
+('Desossa de Aves/Peixes'),
+('Empanamento Perfeito'),
+('Emulsão'),
+('Fermentação Natural (Pães)'),
+('Fritura por Imersão'),
+('Marinadas e Temperos'),
+('Molhos de Base'),
+('Uso de Panela de Pressão');
