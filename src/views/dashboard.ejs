@@ -17,9 +17,16 @@
                 <input type="password" name="senha_aluno" placeholder="Senha provisória" required>
                 <button type="submit">Cadastrar</button>
             </form>
-            <ul>
+           <ul>
                 <% alunos.forEach(aluno => { %>
-                    <li><%= aluno.nome %> (<%= aluno.email %>)</li>
+                    <li style="margin-bottom: 5px;">
+                        <%= aluno.nome %> (<%= aluno.email %>)
+                        <a href="/admin/alunos/editar/<%= aluno.id %>" style="color: blue; text-decoration: none; margin-left: 10px; margin-right: 5px;">[Editar]</a>
+                        <form action="/admin/alunos/excluir" method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="<%= aluno.id %>">
+                            <button type="submit" style="color: red; cursor: pointer; border: none; background: none;">[X]</button>
+                        </form>
+                    </li>
                 <% }) %>
             </ul>
         </div>
@@ -32,7 +39,14 @@
             </form>
             <ul>
                 <% categorias.forEach(categoria => { %>
-                    <li><%= categoria.nome %></li>
+                    <li style="margin-bottom: 5px;">
+                        <%= categoria.nome %> 
+                        <a href="/admin/categorias/editar/<%= categoria.id %>" style="color: blue; text-decoration: none; margin-left: 10px; margin-right: 5px;">[Editar]</a>
+                        <form action="/admin/categorias/excluir" method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="<%= categoria.id %>">
+                            <button type="submit" style="color: red; cursor: pointer; border: none; background: none;">[X]</button>
+                        </form>
+                    </li>
                 <% }) %>
             </ul>
         </div>
@@ -45,7 +59,14 @@
             </form>
             <ul>
                 <% habilidades.forEach(habilidade => { %>
-                    <li><%= habilidade.nome %></li>
+                    <li style="margin-bottom: 5px;">
+                        <%= habilidade.nome %>
+                        <a href="/admin/habilidades/editar/<%= habilidade.id %>" style="color: blue; text-decoration: none; margin-left: 10px; margin-right: 5px;">[Editar]</a>
+                        <form action="/admin/habilidades/excluir" method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="<%= habilidade.id %>">
+                            <button type="submit" style="color: red; cursor: pointer; border: none; background: none;">[X]</button>
+                        </form>
+                    </li>
                 <% }) %>
             </ul>
         </div>

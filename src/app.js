@@ -32,6 +32,15 @@ app.get('/admin/dashboard', verificarAdmin, adminController.renderDashboard);
 app.post('/admin/categorias', verificarAdmin, adminController.cadastrarCategoria);
 app.post('/admin/habilidades', verificarAdmin, adminController.cadastrarHabilidade);
 app.post('/admin/alunos', verificarAdmin, adminController.cadastrarAluno);
+app.post('/admin/categorias/excluir', verificarAdmin, adminController.excluirCategoria);
+app.post('/admin/habilidades/excluir', verificarAdmin, adminController.excluirHabilidade);
+app.post('/admin/alunos/excluir', verificarAdmin, adminController.excluirAluno);
+app.get('/admin/categorias/editar/:id', verificarAdmin, adminController.renderEditarCategoria);
+app.get('/admin/habilidades/editar/:id', verificarAdmin, adminController.renderEditarHabilidade);
+app.get('/admin/alunos/editar/:id', verificarAdmin, adminController.renderEditarAluno);
+app.post('/admin/categorias/editar', verificarAdmin, adminController.atualizarCategoria);
+app.post('/admin/habilidades/editar', verificarAdmin, adminController.atualizarHabilidade);
+app.post('/admin/alunos/editar', verificarAdmin, adminController.atualizarAluno);
 
 app.get('/dashboard', (req, res) => {
     res.redirect('/admin/dashboard');

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar <%= tipo %> - DegustaUTF</title>
+</head>
+<body>
+    <h1>Editar <%= tipo %></h1>
+    <hr>
+    
+    <form action="<%= acao %>" method="POST">
+        <input type="hidden" name="id" value="<%= item.id %>">
+        
+        <p>
+            <label>Nome:</label><br>
+            <input type="text" name="nome" value="<%= item.nome %>" required>
+        </p>
+
+        <% if (tipo === 'Aluno') { %>
+            <p>
+                <label>E-mail:</label><br>
+                <input type="email" name="email" value="<%= item.email %>" required>
+            </p>
+        <% } %>
+
+        <button type="submit">Salvar Alterações</button>
+        <a href="/admin/dashboard" style="margin-left: 10px;">Cancelar</a>
+    </form>
+</body>
+</html>

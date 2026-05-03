@@ -32,6 +32,19 @@ const Aluno = {
         } catch (error) {
             throw error;
         }
+    },
+
+    excluir: async (id) => {
+        const query = 'DELETE FROM alunos WHERE id = $1';
+        await db.query(query, [id]);
+    },
+
+    buscarPorId: async (id) => {
+        const { rows } = await db.query('SELECT * FROM alunos WHERE id = $1', [id]);
+        return rows[0];
+    },
+    atualizar: async (id, nome, email) => {
+        await db.query('UPDATE alunos SET nome = $1, email = $2 WHERE id = $3', [nome, email, id]);
     }
 };
 

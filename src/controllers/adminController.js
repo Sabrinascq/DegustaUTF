@@ -52,6 +52,65 @@ const adminController = {
             console.error('Erro ao cadastrar aluno:', error);
             res.status(500).send('Erro ao cadastrar aluno. O e-mail já pode estar em uso.');
         }
+    },
+
+    excluirCategoria: async (req, res) => {
+        try {
+            await Categoria.excluir(req.body.id);
+            res.redirect('/admin/dashboard');
+        } catch (error) {
+            console.error('Erro ao excluir categoria:', error);
+            res.status(500).send('Erro. Talvez existam receitas usando esta categoria.');
+        }
+    },
+
+    excluirHabilidade: async (req, res) => {
+        try {
+            await Habilidade.excluir(req.body.id);
+            res.redirect('/admin/dashboard');
+        } catch (error) {
+            console.error('Erro ao excluir habilidade:', error);
+            res.status(500).send('Erro ao excluir habilidade.');
+        }
+    },
+
+    excluirAluno: async (req, res) => {
+        try {
+            if (req.body.id == req.session.usuarioLogado.id) {
+                return res.send('<script>alert("Você não pode excluir a si mesmo!"); window.location.href="/admin/dashboard";</script>');
+            }
+            await Aluno.excluir(req.body.id);
+            res.redirect('/admin/dashboard');
+        } catch (error) {
+            console.error('Erro ao excluir aluno:', error);
+            res.status(500).send('Erro ao excluir aluno.');
+        }
+    },
+
+    renderEditarCategoria: async (req, res) => {
+        const categoria = await Categoria.buscarPorId(req.params.id);
+        res.render('editar', { tipo: 'Categoria', item: categoria, acao: '/admin/categorias/editar' });
+    },
+    renderEditarHabilidade: async (req, res) => {
+        const habilidade = await Habilidade.buscarPorId(req.params.id);
+        res.render('editar', { tipo: 'Habilidade', item: habilidade, acao: '/admin/habilidades/editar' });
+    },
+    renderEditarAluno: async (req, res) => {
+        const aluno = await Aluno.buscarPorId(req.params.id);
+        res.render('editar', { tipo: 'Aluno', item: aluno, acao: '/admin/alunos/editar' });
+    },
+
+    atualizarCategoria: async (req, res) => {
+        await Categoria.atualizar(req.body.id, req.body.nome);
+        res.redirect('/admin/dashboard');
+    },
+    atualizarHabilidade: async (req, res) => {
+        await Habilidade.atualizar(req.body.id, req.body.nome);
+        res.redirect('/admin/dashboard');
+    },
+    atualizarAluno: async (req, res) => {
+        await Aluno.atualizar(req.body.id, req.body.nome, req.body.email);
+        res.redirect('/admin/dashboard');
     }
 
 };
