@@ -14,11 +14,16 @@ const loginController = {
             if (usuario) {
                 req.session.usuarioLogado = usuario;
 
+                // REDIRECIONAMENTO INTELIGENTE
                 if (usuario.eh_admin) {
                     res.redirect('/admin/dashboard');
                 } else {
-                    res.redirect('/aluno/home'); 
+                    // O aluno não tem uma "home" própria, ele usa o PORTAL
+                    res.redirect('/portal'); 
                 }
+            } else {
+                // Se não achar o usuário, volta pro login com aviso
+                res.render('login', { erro: 'E-mail ou senha incorretos.' });
             }
         } catch (error) {
             console.error(error);

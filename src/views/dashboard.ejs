@@ -1,75 +1,181 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Administrativo - DegustaUTF</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/sketchy/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: var(--bs-body-bg); padding-bottom: 50px; }
+        
+        /* Botão do Tema (Lua Colorida) */
+        .theme-toggle { 
+            position: fixed; top: 20px; right: 20px; cursor: pointer; z-index: 2000; 
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; border: 2px solid #000 !important; transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); background-color: #000; color: #ffc107;
+        }
+
+        .card { border-width: 2px; margin-bottom: 30px; border-color: #000; }
+        .navbar { border-bottom: 3px solid #000; }
+
+        /* Correção de leitura no Modo Claro */
+        .list-group-item {
+            background-color: #ffffff !important; 
+            color: #000000 !important;           
+            border-color: #000000 !important;
+        }
+
+        /* --- MODO ESCURO --- */
+        [data-bs-theme="dark"] .list-group-item {
+            background-color: #2b3035 !important; 
+            color: #ffffff !important;               
+            border-color: #ffffff !important;
+        }
+        [data-bs-theme="dark"] .card { border-color: #ffffff !important; }
+        [data-bs-theme="dark"] .navbar { border-color: #ffffff !important; }
+
+        /* Botão Editar Neon */
+        [data-bs-theme="dark"] .btn-outline-primary {
+            color: #0dcaf0 !important; border-color: #0dcaf0 !important;
+            background-color: rgba(13, 202, 240, 0.1);
+        }
+        [data-bs-theme="dark"] .btn-outline-primary:hover {
+            background-color: #0dcaf0 !important; color: #000 !important;
+        }
+
+        .form-control { border: 2px solid #000 !important; }
+        [data-bs-theme="dark"] .form-control {
+            background-color: #333 !important; color: #fff !important; border-color: #fff !important;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bem-vindo, <%= usuario.nome %>!</h1>
-    <hr>
 
-    <div style="display: flex; gap: 50px;">
-        <div>
-            <h2>Alunos Cadastrados</h2>
-            <form action="/admin/alunos" method="POST">
-                <input type="text" name="nome_aluno" placeholder="Nome do aluno" required>
-                <input type="email" name="email_aluno" placeholder="E-mail (login)" required>
-                <input type="password" name="senha_aluno" placeholder="Senha provisória" required>
-                <button type="submit">Cadastrar</button>
-            </form>
-           <ul>
-                <% alunos.forEach(aluno => { %>
-                    <li style="margin-bottom: 5px;">
-                        <%= aluno.nome %> (<%= aluno.email %>)
-                        <a href="/admin/alunos/editar/<%= aluno.id %>" style="color: blue; text-decoration: none; margin-left: 10px; margin-right: 5px;">[Editar]</a>
-                        <form action="/admin/alunos/excluir" method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="<%= aluno.id %>">
-                            <button type="submit" style="color: red; cursor: pointer; border: none; background: none;">[X]</button>
-                        </form>
-                    </li>
-                <% }) %>
-            </ul>
+    <div class="theme-toggle shadow" id="themeBtn">
+        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+    </div>
+
+    <nav class="navbar navbar-expand-lg bg-warning mb-4 shadow-sm">
+        <div class="container">
+            <span class="navbar-brand fw-bold text-dark h2 mb-0">DegustaUTF Admin</span>
+            <div class="d-flex align-items-center">
+                <a href="/portal" class="btn btn-outline-dark btn-sm border-2 fw-bold me-3 shadow-sm">
+                    <i class="bi bi-eye-fill me-1"></i> Ver Portal
+                </a>
+                
+                <span class="me-3 text-dark fw-bold small">Olá, <%= usuario.nome %>!</span>
+                <a href="/logout" class="btn btn-dark btn-sm border-2 fw-bold">Sair</a>
+            </div>
         </div>
-        
-        <div>
-            <h2>Categorias</h2>
-            <form action="/admin/categorias" method="POST">
-                <input type="text" name="nome_categoria" placeholder="Nova categoria..." required>
-                <button type="submit">Adicionar</button>
-            </form>
-            <ul>
-                <% categorias.forEach(categoria => { %>
-                    <li style="margin-bottom: 5px;">
-                        <%= categoria.nome %> 
-                        <a href="/admin/categorias/editar/<%= categoria.id %>" style="color: blue; text-decoration: none; margin-left: 10px; margin-right: 5px;">[Editar]</a>
-                        <form action="/admin/categorias/excluir" method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="<%= categoria.id %>">
-                            <button type="submit" style="color: red; cursor: pointer; border: none; background: none;">[X]</button>
-                        </form>
-                    </li>
-                <% }) %>
-            </ul>
+    </nav>
+
+    <div class="container">
+        <div class="card shadow border-dark">
+            <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Cadastrar Novo Aluno</div>
+            <div class="card-body">
+                <form action="/admin/alunos" method="POST" class="row g-2 mb-4">
+                    <div class="col-md-4"><input type="text" name="nome_aluno" class="form-control border-2" placeholder="Nome do Aluno" required></div>
+                    <div class="col-md-3"><input type="email" name="email_aluno" class="form-control border-2" placeholder="E-mail" required></div>
+                    <div class="col-md-3"><input type="password" name="senha_aluno" class="form-control border-2" placeholder="Senha" required></div>
+                    <div class="col-md-2"><button type="submit" class="btn btn-dark w-100 border-2 fw-bold shadow-sm">Cadastrar</button></div>
+                </form>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr><th>Nome</th><th>E-mail</th><th class="text-center">Ações</th></tr>
+                        </thead>
+                        <tbody>
+                            <% alunos.forEach(aluno => { %>
+                                <tr>
+                                    <td class="fw-bold"><%= aluno.nome %></td>
+                                    <td><%= aluno.email %></td>
+                                    <td class="text-center">
+                                        <a href="/admin/alunos/editar/<%= aluno.id %>" class="btn btn-sm btn-outline-primary border-2 fw-bold me-1">Editar</a>
+                                        <form action="/admin/alunos/excluir" method="POST" class="d-inline">
+                                            <input type="hidden" name="id" value="<%= aluno.id %>">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger border-2 fw-bold" onclick="return confirm('Excluir este aluno?')">X</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <div>
-            <h2>Habilidades Culinárias</h2>
-            <form action="/admin/habilidades" method="POST">
-                <input type="text" name="nome_habilidade" placeholder="Nova habilidade..." required>
-                <button type="submit">Adicionar</button>
-            </form>
-            <ul>
-                <% habilidades.forEach(habilidade => { %>
-                    <li style="margin-bottom: 5px;">
-                        <%= habilidade.nome %>
-                        <a href="/admin/habilidades/editar/<%= habilidade.id %>" style="color: blue; text-decoration: none; margin-left: 10px; margin-right: 5px;">[Editar]</a>
-                        <form action="/admin/habilidades/excluir" method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="<%= habilidade.id %>">
-                            <button type="submit" style="color: red; cursor: pointer; border: none; background: none;">[X]</button>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow border-dark">
+                    <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Categorias</div>
+                    <div class="card-body">
+                        <form action="/admin/categorias" method="POST" class="input-group mb-3">
+                            <input type="text" name="nome_categoria" class="form-control border-2" placeholder="Nova categoria..." required>
+                            <button type="submit" class="btn btn-dark border-2 fw-bold">Add</button>
                         </form>
-                    </li>
-                <% }) %>
-            </ul>
+                        <ul class="list-group list-group-flush">
+                            <% categorias.forEach(cat => { %>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold"><%= cat.nome %></span>
+                                    <div>
+                                        <a href="/admin/categorias/editar/<%= cat.id %>" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">Editar</a>
+                                        <form action="/admin/categorias/excluir" method="POST" class="d-inline">
+                                            <input type="hidden" name="id" value="<%= cat.id %>">
+                                            <button type="submit" class="btn btn-sm text-danger fw-bold border-0 bg-transparent" onclick="return confirm('Excluir?')">X</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow border-dark">
+                    <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Habilidades</div>
+                    <div class="card-body">
+                        <form action="/admin/habilidades" method="POST" class="input-group mb-3">
+                            <input type="text" name="nome_habilidade" class="form-control border-2" placeholder="Nova habilidade..." required>
+                            <button type="submit" class="btn btn-dark border-2 fw-bold">Add</button>
+                        </form>
+                        <ul class="list-group list-group-flush">
+                            <% habilidades.forEach(hab => { %>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold"><%= hab.nome %></span>
+                                    <div>
+                                        <a href="/admin/habilidades/editar/<%= hab.id %>" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">Editar</a>
+                                        <form action="/admin/habilidades/excluir" method="POST" class="d-inline">
+                                            <input type="hidden" name="id" value="<%= hab.id %>">
+                                            <button type="submit" class="btn btn-sm text-danger fw-bold border-0 bg-transparent" onclick="return confirm('Excluir?')">X</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        const btn = document.getElementById('themeBtn'), icon = document.getElementById('themeIcon'), html = document.documentElement;
+        btn.addEventListener('click', () => {
+            if (html.getAttribute('data-bs-theme') === 'light') {
+                html.setAttribute('data-bs-theme', 'dark');
+                icon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+                btn.style.backgroundColor = '#ffc107'; btn.style.color = '#000'; btn.style.borderColor = '#fff';
+            } else {
+                html.setAttribute('data-bs-theme', 'light');
+                icon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+                btn.style.backgroundColor = '#000'; btn.style.color = '#ffc107'; btn.style.borderColor = '#000';
+            }
+        });
+    </script>
 </body>
 </html>
