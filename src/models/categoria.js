@@ -23,6 +23,7 @@ const Categoria = {
         const { rows } = await db.query('SELECT * FROM categorias WHERE id = $1', [id]);
         return rows[0];
     },
+    
     atualizar: async (id, nome) => {
         await db.query('UPDATE categorias SET nome = $1 WHERE id = $2', [nome, id]);
     }

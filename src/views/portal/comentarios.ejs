@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comentários - DegustaUTF</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/sketchy/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: var(--bs-body-bg); padding-bottom: 50px; }
+        
+        /* Botão do Tema Padronizado */
+        .theme-toggle { 
+            position: fixed; top: 20px; right: 20px; cursor: pointer; z-index: 2000; 
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; border: 2px solid #000 !important; transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); background-color: #000; color: #ffc107;
+        }
+
+        .card { border-width: 2px; border-color: #000; }
+        .post-it { 
+            border-left: 5px solid #ffc107 !important; 
+            background-color: #fff !important;
+            color: #000 !important;
+        }
+        .navbar { border-bottom: 3px solid #000; }
+
+        /* Ajustes de Modo Escuro */
+        [data-bs-theme="dark"] .card { border-color: #fff !important; }
+        [data-bs-theme="dark"] .post-it { 
+            background-color: #2b3035 !important; 
+            color: #fff !important; 
+            border-color: #fff !important;
+        }
+        [data-bs-theme="dark"] .form-control, [data-bs-theme="dark"] .form-select {
+            background-color: #333 !important; color: #fff !important; border-color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="theme-toggle shadow" id="themeBtn">
+        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+    </div>
+
+    <nav class="navbar navbar-expand-lg bg-warning mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-dark" href="/portal">
+                <i class="bi bi-arrow-left-circle-fill me-2"></i> Voltar para Categorias
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex align-items-center mb-4">
+            <h2 class="fw-bold"><i class="bi bi-chat-quote-fill text-warning me-2"></i><%= nomeCategoria %></h2>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-5 mb-4">
+                <div class="card shadow border-dark">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold border-bottom border-2 pb-2 mb-3">Sua Avaliação</h5>
+                        
+                        <% if (typeof usuarioLogado !== 'undefined' && usuarioLogado) { %>
+                            <form action="/portal/categoria/<%= categoriaId %>/comentar" method="POST">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Seu Nome</label>
+                                    <input type="text" name="autor" class="form-control border-2 shadow-sm" placeholder="Digite seu nome..." required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Nota</label>
+                                    <select name="nota" class="form-select border-2 shadow-sm" required>
+                                        <option value="5">⭐⭐⭐⭐⭐ (Excelente)</option>
+                                        <option value="4">⭐⭐⭐⭐ (Muito Bom)</option>
+                                        <option value="3" selected>⭐⭐⭐ (Bom)</option>
+                                        <option value="2">⭐⭐ (Regular)</option>
+                                        <option value="1">⭐ (Ruim)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Seu Comentário</label>
+                                    <textarea name="texto" class="form-control border-2 shadow-sm" rows="3" placeholder="O que achou?" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-warning border-dark border-2 w-100 fw-bold shadow">
+                                    Enviar Comentário <i class="bi bi-send-fill ms-1"></i>
+                                </button>
+                            </form>
+                        <% } else { %>
+                            <div class="text-center py-4">
+                                <i class="bi bi-lock-fill display-4 text-warning mb-3"></i>
+                                <p class="fw-bold">Para comentar, você precisa estar logado no sistema.</p>
+                                <a href="/login" class="btn btn-dark border-2 fw-bold w-100 mt-2 shadow">
+                                    Fazer Login <i class="bi bi-box-arrow-in-right ms-1"></i>
+                                </a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <h5 class="fw-bold mb-3">Feed de Comentários:</h5>
+                <% if (comentarios.length === 0) { %>
+                    <div class="alert alert-warning border-2 shadow-sm">
+                        <i class="bi bi-info-circle-fill me-2"></i> Ainda não há avaliações nesta categoria.
+                    </div>
+                <% } else { %>
+                    <% comentarios.forEach(comentario => { %>
+                        <div class="card mb-3 shadow-sm post-it border-dark">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold text-primary mb-0">
+                                        <i class="bi bi-person-circle me-1"></i> <%= comentario.autor %>
+                                    </h6>
+                                    <span class="badge bg-warning text-dark border border-dark">
+                                        <%= comentario.nota %> <i class="bi bi-star-fill"></i>
+                                    </span>
+                                </div>
+                                <p class="card-text italic">"<%= comentario.texto %>"</p>
+                                <div class="text-end">
+                                    <small class="text-muted small" style="font-size: 0.75rem;">
+                                        <i class="bi bi-calendar3 me-1"></i> <%= comentario.dataCriacao.toLocaleDateString('pt-BR') %>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('themeBtn');
+        const icon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        btn.addEventListener('click', () => {
+            if (html.getAttribute('data-bs-theme') === 'light') {
+                html.setAttribute('data-bs-theme', 'dark');
+                icon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+                btn.style.backgroundColor = '#ffc107'; btn.style.color = '#000'; btn.style.borderColor = '#fff';
+            } else {
+                html.setAttribute('data-bs-theme', 'light');
+                icon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+                btn.style.backgroundColor = '#000'; btn.style.color = '#ffc107'; btn.style.borderColor = '#000';
+            }
+        });
+    </script>
+</body>
+</html>
