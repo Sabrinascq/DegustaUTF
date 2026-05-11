@@ -59,12 +59,16 @@
     </div>
 
     <nav class="navbar navbar-expand-lg bg-warning mb-4 shadow-sm">
-        <div class="container">
-            <span class="navbar-brand fw-bold text-dark h2 mb-0">DegustaUTF Admin</span>
-            <div class="d-flex align-items-center">
-                <a href="/portal" class="btn btn-outline-dark btn-sm border-2 fw-bold me-3 shadow-sm">
-                    <i class="bi bi-eye-fill me-1"></i> Ver Portal
-                </a>
+    <div class="container">
+        <span class="navbar-brand fw-bold text-dark h2 mb-0">DegustaUTF Admin</span>
+        <div class="d-flex align-items-center">
+            <a href="/portal" class="btn btn-outline-dark btn-sm border-2 fw-bold me-3 shadow-sm">
+                <i class="bi bi-eye-fill me-1"></i> Ver Portal
+            </a>
+            
+            <a href="/receitas/nova" class="btn btn-outline-dark btn-sm border-2 fw-bold me-3 shadow-sm">
+                <i class="bi bi-plus-circle-fill me-1"></i> Nova Receita
+            </a>
                 
                 <span class="me-3 text-dark fw-bold small">Olá, <%= usuario.nome %>!</span>
                 <a href="/logout" class="btn btn-dark btn-sm border-2 fw-bold">Sair</a>
@@ -72,6 +76,8 @@
         </div>
     </nav>
 
+
+    
     <div class="container">
         <div class="card shadow border-dark">
             <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Cadastrar Novo Aluno</div>

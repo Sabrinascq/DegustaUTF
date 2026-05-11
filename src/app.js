@@ -85,6 +85,12 @@ app.get('/', (req, res) => {
     res.redirect('/portal');
 });
 
+// --- ROTAS DAS RECEITAS --
+
+const receitaController = require('./controllers/receitaController');
+app.get('/receitas/nova', receitaController.renderizarFormulario);
+app.post('/receitas/cadastrar', receitaController.salvar);
+
 // --- INICIALIZAÇÃO DO SERVIDOR ---
 const PORT = 3000;
 app.listen(PORT, () => {
