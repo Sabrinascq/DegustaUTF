@@ -1,5 +1,7 @@
 const Comentario = require('../models/comentario'); // MongoDB
 const Categoria = require('../models/categoria');   // PostgreSQL
+const Receita = require('../models/receita');
+const pool = require('../config/database'); // <-- ADICIONE ESTA LINHA
 
 const portalController = {
     index: async (req, res) => {
@@ -7,7 +9,6 @@ const portalController = {
             const categoriasReais = await Categoria.listarTodas();
             res.render('portal/index', { 
                 categorias: categoriasReais,
-                // ADICIONADO: Envia a sessão para o index
                 usuarioLogado: req.session.usuarioLogado || null 
             });
         } catch (erro) {
@@ -16,46 +17,87 @@ const portalController = {
         }
     },
 
-    verComentarios: async (req, res) => {
+    verCategoria: async (req, res) => {
         const idDaCategoria = Number(req.params.id);
         try {
             const categoria = await Categoria.buscarPorId(idDaCategoria);
-            const comentariosDoBanco = await Comentario.find({ categoriaId: idDaCategoria }).sort({ dataCriacao: -1 });
+            const receitas = await Receita.buscarPorCategoria(idDaCategoria);
             
-            res.render('portal/comentarios', { 
-                categoriaId: idDaCategoria,
-                nomeCategoria: categoria ? categoria.nome : "Categoria",
-                comentarios: comentariosDoBanco,
-                // ADICIONADO: Aqui é onde libera o formulário de comentários!
+            res.render('portal/lista-receitas', { 
+                categoria: categoria,
+                receitas: receitas,
                 usuarioLogado: req.session.usuarioLogado || null 
             });
         } catch (erro) {
             console.error(erro);
-            res.send("Erro ao buscar comentários.");
+            res.status(500).send("Erro ao buscar receitas.");
         }
     },
 
     salvarComentario: async (req, res) => {
-        const idDaCategoria = Number(req.params.id);
+        const idDaReceita = Number(req.params.id);
         const { autor, nota, texto } = req.body; 
 
         try {
-            // Segurança extra: só salva se houver alguém na sessão
-            if (!req.session.usuarioLogado) {
-                return res.redirect('/login');
-            }
+            if (!req.session.usuarioLogado) return res.redirect('/login');
 
             await Comentario.create({
-                autor: autor,
+                autor,
                 nota: Number(nota),
-                texto: texto,
-                categoriaId: idDaCategoria
+                texto,
+                receitaId: idDaReceita 
             });
-
-            res.redirect('/portal/categoria/' + idDaCategoria);
+            res.redirect('/receita/' + idDaReceita); 
         } catch (erro) {
-            console.error(erro);
             res.send("Erro ao salvar o comentário.");
+        }
+    },
+
+    verReceita: async (req, res) => {
+        const idDaReceita = Number(req.params.id);
+        try {
+            const receita = await Receita.buscarPorId(idDaReceita);
+            
+            if (!receita) {
+                return res.status(404).send("Receita não encontrada.");
+            }
+
+            const comentariosDoBanco = await Comentario.find({ receitaId: idDaReceita })
+                                                     .sort({ dataCriacao: -1 });
+            
+            res.render('portal/receita', { 
+                receita,
+                comentarios: comentariosDoBanco,
+                usuarioLogado: req.session.usuarioLogado || null 
+            });
+        } catch (erro) {
+            console.error("Erro ao buscar detalhes da receita:", erro);
+            res.status(500).send("Erro interno ao carregar a página.");
+        }
+    },
+
+    relatorioHabilidades: async (req, res) => {
+        try {
+            const totalAlunosRes = await pool.query('SELECT COUNT(*) FROM alunos');
+            const totalAlunos = parseInt(totalAlunosRes.rows[0].count);
+
+            const query = `
+                SELECT h.nome, COUNT(ah.aluno_id) as quantidade
+                FROM habilidades h
+                LEFT JOIN aluno_habilidades ah ON h.id = ah.habilidade_id
+                GROUP BY h.id, h.nome`;
+            
+            const { rows } = await pool.query(query);
+
+            const relatorio = rows.map(r => ({
+                nome: r.nome,
+                porcentagem: totalAlunos > 0 ? ((r.quantidade / totalAlunos) * 100).toFixed(1) : 0
+            }));
+
+            res.render('portal/relatorio', { relatorio });
+        } catch (erro) {
+            console.error("Erro no Relatório:", erro);
+            res.status(500).send("Erro ao gerar relatório.");
         }
     }
 };

@@ -23,15 +23,12 @@ const Aluno = {
         }
     },
 
-    cadastrar: async (nome, email, senha) => {
-        const query = 'INSERT INTO alunos (nome, email, senha) VALUES ($1, $2, $3) RETURNING *';
-        const values = [nome, email, senha];
-        try {
-            const { rows } = await db.query(query, values);
-            return rows[0];
-        } catch (error) {
-            throw error;
-        }
+    cadastrar: async (nome, email, senhaHash, eh_admin) => {
+        // CORRIGIDO: De pool.query para db.query
+        await db.query(
+            'INSERT INTO alunos (nome, email, senha, eh_admin) VALUES ($1, $2, $3, $4)',
+            [nome, email, senhaHash, eh_admin]
+        );
     },
 
     excluir: async (id) => {
@@ -43,8 +40,13 @@ const Aluno = {
         const { rows } = await db.query('SELECT * FROM alunos WHERE id = $1', [id]);
         return rows[0];
     },
-    atualizar: async (id, nome, email) => {
-        await db.query('UPDATE alunos SET nome = $1, email = $2 WHERE id = $3', [nome, email, id]);
+    
+    atualizar: async (id, nome, email, eh_admin) => {
+        // CORRIGIDO: De pool.query para db.query
+        await db.query(
+            'UPDATE alunos SET nome = $1, email = $2, eh_admin = $3 WHERE id = $4',
+            [nome, email, eh_admin, id]
+        );
     }
 };
 

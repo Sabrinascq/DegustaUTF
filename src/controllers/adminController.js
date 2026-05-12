@@ -1,19 +1,40 @@
 const Categoria = require('../models/categoria');
 const Habilidade = require('../models/habilidade');
 const Aluno = require('../models/aluno');
+const pool = require('../config/database'); // Importado para buscar as receitas
 
 const adminController = {
     renderDashboard: async (req, res) => {
         try {
-            const categorias = await Categoria.listarTodas();
-            const habilidades = await Habilidade.listarTodas();
-            const alunos = await Aluno.listarTodos();
+            const usuario = req.session.usuarioLogado; 
+            let receitas;
+
+            if (usuario.eh_admin) {
+                const result = await pool.query('SELECT id, nome FROM receitas ORDER BY id DESC');
+                receitas = result.rows;
+            } else {
+                const result = await pool.query(`
+                    SELECT r.id, r.nome FROM receitas r
+                    JOIN receita_autores ra ON r.id = ra.receita_id
+                    WHERE ra.aluno_id = $1`, [usuario.id]);
+                receitas = result.rows;
+            }
+
+            const resultadoHabilidades = await pool.query('SELECT * FROM habilidades ORDER BY nome');
+
+            const habilidadesDoAluno = await pool.query(`
+                SELECT h.nome, ah.nivel, h.id 
+                FROM habilidades h
+                JOIN aluno_habilidades ah ON h.id = ah.habilidade_id
+                WHERE ah.aluno_id = $1`, [usuario.id]);
 
             res.render('dashboard', { 
-                usuario: req.session.usuarioLogado,
-                categorias,
-                habilidades,
-                alunos
+                usuario, 
+                receitas,
+                alunos: usuario.eh_admin ? (await Aluno.listarTodos()) : [],
+                categorias: await Categoria.listarTodas(),
+                habilidades: resultadoHabilidades.rows, 
+                habilidadesDoAluno: habilidadesDoAluno.rows
             });
         } catch (error) {
             console.error('Erro ao carregar o dashboard:', error);
@@ -45,8 +66,14 @@ const adminController = {
 
     cadastrarAluno: async (req, res) => {
         try {
-            const { nome_aluno, email_aluno, senha_aluno } = req.body;
-            await Aluno.cadastrar(nome_aluno, email_aluno, senha_aluno);
+            const { nome_aluno, email_aluno, senha_aluno, eh_admin } = req.body;
+            
+            // Transforma o valor do checkbox 'on' em true, caso contrário false
+            const isAdmin = eh_admin === 'on' ? true : false;
+            
+            // Passa o isAdmin como o 4º parâmetro para o Model
+            await Aluno.cadastrar(nome_aluno, email_aluno, senha_aluno, isAdmin);
+            
             res.redirect('/admin/dashboard');
         } catch (error) {
             console.error('Erro ao cadastrar aluno:', error);
@@ -109,10 +136,21 @@ const adminController = {
         res.redirect('/admin/dashboard');
     },
     atualizarAluno: async (req, res) => {
-        await Aluno.atualizar(req.body.id, req.body.nome, req.body.email);
-        res.redirect('/admin/dashboard');
-    }
+        try {
+            const { id, nome, email, eh_admin } = req.body;
+            
+            // Mesma lógica: converte para booleano
+            const isAdmin = eh_admin === 'on' ? true : false;
 
+            // Passa o isAdmin para o Model
+            await Aluno.atualizar(id, nome, email, isAdmin);
+            
+            res.redirect('/admin/dashboard');
+        } catch (error) {
+            console.error('Erro ao atualizar aluno:', error);
+            res.status(500).send('Erro ao atualizar aluno.');
+        }
+    }
 };
 
 module.exports = adminController;

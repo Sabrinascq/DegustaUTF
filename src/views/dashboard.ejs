@@ -76,34 +76,81 @@
         </div>
     </nav>
 
-
-    
     <div class="container">
-        <div class="card shadow border-dark">
-            <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Cadastrar Novo Aluno</div>
+        
+        <% if (usuario.eh_admin) { %>
+            <div class="card shadow border-dark">
+                <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Cadastrar Novo Aluno</div>
+                <div class="card-body">
+                    <form action="/admin/alunos" method="POST" class="row g-2 mb-4 align-items-center">
+                        <div class="col-md-3">
+                            <input type="text" name="nome_aluno" class="form-control border-2" placeholder="Nome do Aluno" required>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="email" name="email_aluno" class="form-control border-2" placeholder="E-mail" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="password" name="senha_aluno" class="form-control border-2" placeholder="Senha" required>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="form-check form-switch d-inline-block">
+                                <input class="form-check-input border-dark" type="checkbox" name="eh_admin" id="checkAdmin">
+                                <label class="form-check-label fw-bold" for="checkAdmin">É Admin?</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-dark w-100 border-2 fw-bold shadow-sm">Cadastrar</button>
+                        </div>
+                    </form>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr><th>Nome</th><th>E-mail</th><th class="text-center">Ações</th></tr>
+                            </thead>
+                            <tbody>
+                                <% alunos.forEach(aluno => { %>
+                                    <tr>
+                                        <td class="fw-bold"><%= aluno.nome %></td>
+                                        <td><%= aluno.email %></td>
+                                        <td class="text-center">
+                                            <a href="/admin/alunos/editar/<%= aluno.id %>" class="btn btn-sm btn-outline-primary border-2 fw-bold me-1">Editar</a>
+                                            <form action="/admin/alunos/excluir" method="POST" class="d-inline">
+                                                <input type="hidden" name="id" value="<%= aluno.id %>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger border-2 fw-bold" onclick="return confirm('Excluir este aluno?')">X</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <div class="card shadow border-dark mt-4">
+            <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">
+                <%= usuario.eh_admin ? 'Gerenciar Todas as Receitas' : 'Minhas Receitas' %>
+            </div>
             <div class="card-body">
-                <form action="/admin/alunos" method="POST" class="row g-2 mb-4">
-                    <div class="col-md-4"><input type="text" name="nome_aluno" class="form-control border-2" placeholder="Nome do Aluno" required></div>
-                    <div class="col-md-3"><input type="email" name="email_aluno" class="form-control border-2" placeholder="E-mail" required></div>
-                    <div class="col-md-3"><input type="password" name="senha_aluno" class="form-control border-2" placeholder="Senha" required></div>
-                    <div class="col-md-2"><button type="submit" class="btn btn-dark w-100 border-2 fw-bold shadow-sm">Cadastrar</button></div>
-                </form>
-                
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="table-dark">
-                            <tr><th>Nome</th><th>E-mail</th><th class="text-center">Ações</th></tr>
+                            <tr>
+                                <th>Nome da Receita</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
                         </thead>
                         <tbody>
-                            <% alunos.forEach(aluno => { %>
+                            <% receitas.forEach(r => { %>
                                 <tr>
-                                    <td class="fw-bold"><%= aluno.nome %></td>
-                                    <td><%= aluno.email %></td>
+                                    <td class="fw-bold"><%= r.nome %></td>
                                     <td class="text-center">
-                                        <a href="/admin/alunos/editar/<%= aluno.id %>" class="btn btn-sm btn-outline-primary border-2 fw-bold me-1">Editar</a>
-                                        <form action="/admin/alunos/excluir" method="POST" class="d-inline">
-                                            <input type="hidden" name="id" value="<%= aluno.id %>">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger border-2 fw-bold" onclick="return confirm('Excluir este aluno?')">X</button>
+                                        <a href="/receitas/editar/<%= r.id %>" class="btn btn-sm btn-outline-primary border-2 fw-bold me-1">Editar</a>
+                                        <form action="/receitas/excluir" method="POST" class="d-inline">
+                                            <input type="hidden" name="id" value="<%= r.id %>">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger border-2 fw-bold" onclick="return confirm('Excluir esta receita?')">X</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -114,74 +161,109 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card shadow border-dark">
-                    <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Categorias</div>
-                    <div class="card-body">
-                        <form action="/admin/categorias" method="POST" class="input-group mb-3">
-                            <input type="text" name="nome_categoria" class="form-control border-2" placeholder="Nova categoria..." required>
-                            <button type="submit" class="btn btn-dark border-2 fw-bold">Add</button>
-                        </form>
-                        <ul class="list-group list-group-flush">
-                            <% categorias.forEach(cat => { %>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold"><%= cat.nome %></span>
-                                    <div>
-                                        <a href="/admin/categorias/editar/<%= cat.id %>" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">Editar</a>
-                                        <form action="/admin/categorias/excluir" method="POST" class="d-inline">
-                                            <input type="hidden" name="id" value="<%= cat.id %>">
-                                            <button type="submit" class="btn btn-sm text-danger fw-bold border-0 bg-transparent" onclick="return confirm('Excluir?')">X</button>
-                                        </form>
-                                    </div>
-                                </li>
-                            <% }) %>
-                        </ul>
-                    </div>
-                </div>
+        <div class="card shadow border-dark mt-4">
+            <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">
+                Minhas Habilidades Culinárias
             </div>
-
-            <div class="col-md-6">
-                <div class="card shadow border-dark">
-                    <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Habilidades</div>
-                    <div class="card-body">
-                        <form action="/admin/habilidades" method="POST" class="input-group mb-3">
-                            <input type="text" name="nome_habilidade" class="form-control border-2" placeholder="Nova habilidade..." required>
-                            <button type="submit" class="btn btn-dark border-2 fw-bold">Add</button>
-                        </form>
-                        <ul class="list-group list-group-flush">
+            <div class="card-body">
+                <form action="/admin/minhas-habilidades" method="POST" class="row g-2 mb-4">
+                    <div class="col-md-6">
+                        <select name="habilidade_id" class="form-select border-2" required>
+                            <option value="">Selecione uma habilidade...</option>
                             <% habilidades.forEach(hab => { %>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold"><%= hab.nome %></span>
-                                    <div>
-                                        <a href="/admin/habilidades/editar/<%= hab.id %>" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">Editar</a>
-                                        <form action="/admin/habilidades/excluir" method="POST" class="d-inline">
-                                            <input type="hidden" name="id" value="<%= hab.id %>">
-                                            <button type="submit" class="btn btn-sm text-danger fw-bold border-0 bg-transparent" onclick="return confirm('Excluir?')">X</button>
-                                        </form>
-                                    </div>
-                                </li>
+                                <option value="<%= hab.id %>"><%= hab.nome %></option>
                             <% }) %>
-                        </ul>
+                        </select>
                     </div>
-                </div>
+                    <div class="col-md-4">
+                        <input type="number" name="nivel" class="form-control border-2" placeholder="Nível (0-10)" min="0" max="10" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-dark w-100 border-2 fw-bold shadow-sm">Salvar</button>
+                    </div>
+                </form>
+
+                <ul class="list-group list-group-flush">
+                    <% habilidadesDoAluno.forEach(hab => { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold"><%= hab.nome %></span>
+                                <span class="badge bg-primary ms-2">Nível: <%= hab.nivel %>/10</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <button type="button" class="btn btn-sm btn-outline-primary border-2 fw-bold me-2" 
+                                        onclick="document.getElementsByName('habilidade_id')[0].value='<%= hab.id %>'; document.getElementsByName('nivel')[0].value='<%= hab.nivel %>'; document.getElementsByName('nivel')[0].focus();">
+                                    Editar
+                                </button>
+
+                                <form action="/admin/minhas-habilidades/excluir" method="POST" class="d-inline">
+                                    <input type="hidden" name="habilidade_id" value="<%= hab.id %>">
+                                    <button type="submit" class="btn btn-sm text-danger fw-bold border-0 bg-transparent" onclick="return confirm('Remover esta habilidade?')">Remover</button>
+                                </form>
+                            </div>
+                        </li>
+                    <% }) %>
+                </ul>
             </div>
         </div>
+
+        <% if (usuario.eh_admin) { %>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card shadow border-dark">
+                        <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Categorias do Sistema</div>
+                        <div class="card-body">
+                            <form action="/admin/categorias" method="POST" class="input-group mb-3">
+                                <input type="text" name="nome_categoria" class="form-control border-2" placeholder="Nova categoria..." required>
+                                <button type="submit" class="btn btn-dark border-2 fw-bold">Add</button>
+                            </form>
+                            <ul class="list-group list-group-flush">
+                                <% categorias.forEach(cat => { %>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold"><%= cat.nome %></span>
+                                        <div>
+                                            <a href="/admin/categorias/editar/<%= cat.id %>" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">Editar</a>
+                                            <form action="/admin/categorias/excluir" method="POST" class="d-inline">
+                                                <input type="hidden" name="id" value="<%= cat.id %>">
+                                                <button type="submit" class="btn btn-sm text-danger fw-bold border-0 bg-transparent" onclick="return confirm('Excluir?')">X</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow border-dark">
+                        <div class="card-header bg-warning text-dark fw-bold border-bottom border-dark">Habilidades Gerais</div>
+                        <div class="card-body">
+                            <form action="/admin/habilidades" method="POST" class="input-group mb-3">
+                                <input type="text" name="nome_habilidade" class="form-control border-2" placeholder="Nova habilidade..." required>
+                                <button type="submit" class="btn btn-dark border-2 fw-bold">Add</button>
+                            </form>
+                            <ul class="list-group list-group-flush">
+                                <% habilidades.forEach(hab => { %>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold"><%= hab.nome %></span>
+                                        <div>
+                                            <a href="/admin/habilidades/editar/<%= hab.id %>" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">Editar</a>
+                                            <form action="/admin/habilidades/excluir" method="POST" class="d-inline">
+                                                <input type="hidden" name="id" value="<%= hab.id %>">
+                                                <button type="submit" class="btn btn-sm text-danger fw-bold border-0 bg-transparent" onclick="return confirm('Excluir?')">X</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
     </div>
 
-    <script>
-        const btn = document.getElementById('themeBtn'), icon = document.getElementById('themeIcon'), html = document.documentElement;
-        btn.addEventListener('click', () => {
-            if (html.getAttribute('data-bs-theme') === 'light') {
-                html.setAttribute('data-bs-theme', 'dark');
-                icon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
-                btn.style.backgroundColor = '#ffc107'; btn.style.color = '#000'; btn.style.borderColor = '#fff';
-            } else {
-                html.setAttribute('data-bs-theme', 'light');
-                icon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
-                btn.style.backgroundColor = '#000'; btn.style.color = '#ffc107'; btn.style.borderColor = '#000';
-            }
-        });
-    </script>
+<script src="/js/theme.js"></script>
 </body>
 </html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Receita - DegustaUTF</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/sketchy/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: var(--bs-body-bg); padding-top: 50px; }
+        .edit-card { max-width: 800px; margin: auto; border-width: 2px; border-color: #000; }
+        .form-control { border: 2px solid #000 !important; }
+        [data-bs-theme="dark"] .edit-card { border-color: #fff; }
+        [data-bs-theme="dark"] .form-control { background-color: #333 !important; color: #fff !important; border-color: #fff !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card edit-card shadow-lg mb-5">
+            <div class="card-header bg-warning text-dark border-bottom border-dark border-2">
+                <h2 class="mb-0 fw-bold">Editar Receita: <%= receita.nome %></h2>
+            </div>
+            
+            <div class="card-body p-4">
+                <form action="/receitas/atualizar" method="POST">
+                    <input type="hidden" name="id" value="<%= receita.id %>">
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Nome da Receita:</label>
+                        <input type="text" name="nome" value="<%= receita.nome %>" class="form-control border-2" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Link da Mídia (Imagem/Vídeo):</label>
+                        <input type="url" name="midia_url" value="<%= receita.midia_url %>" class="form-control border-2">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Modo de Preparo e Ingredientes:</label>
+                        <textarea name="descricao" class="form-control border-2" rows="8" required><%= receita.descricao %></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Categorias da Receita:</label>
+                        <div class="row p-2 border border-dark rounded bg-white shadow-sm">
+                            <% categorias.forEach(cat => { %>
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input border-dark" type="checkbox" name="categorias" 
+                                            value="<%= cat.id %>" id="cat<%= cat.id %>"
+                                            <%= idsMarcados.includes(cat.id) ? 'checked' : '' %>>
+                                        <label class="form-check-label fw-bold" for="cat<%= cat.id %>">
+                                            <%= cat.nome %>
+                                        </label>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-bold text-primary">
+                            <i class="bi bi-people-fill me-2"></i> Autores/Responsáveis pela Receita:
+                        </label>
+                        <div class="row p-3 border border-primary rounded bg-white shadow-sm">
+                            <% alunos.forEach(al => { %>
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="coautores" 
+                                            value="<%= al.id %>" id="autor<%= al.id %>"
+                                            <%= autoresMarcados.includes(al.id) ? 'checked' : '' %>>
+                                        <label class="form-check-label fw-bold" for="autor<%= al.id %>">
+                                            <%= al.nome %>
+                                        </label>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <small class="text-muted fw-bold mt-2 d-block">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Qualquer aluno marcado acima terá poder total para editar ou excluir esta receita.
+                        </small>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-3 border-top border-dark border-2">
+                        <a href="/admin/dashboard" class="btn btn-outline-danger border-2 fw-bold px-4">Cancelar</a>
+                        <button type="submit" class="btn btn-warning border-dark border-2 fw-bold px-5">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/js/theme.js"></script>
+</body>
+</html>

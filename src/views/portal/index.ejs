@@ -46,9 +46,21 @@
             <h1 class="display-3 fw-bold text-dark">Degusta UTF</h1>
             <p class="lead text-dark fw-bold">O que vamos explorar hoje? Escolha uma categoria abaixo!</p>
             <div class="mt-4">
-                <a href="/login" class="btn btn-dark border-2 fw-bold px-4 py-2 shadow">
-                    <i class="bi bi-person-badge me-2"></i>Área Restrita
-                </a>
+                <% if (typeof usuarioLogado !== 'undefined' && usuarioLogado) { %>
+                    <a href="/admin/dashboard" class="btn btn-warning border-dark border-2 fw-bold px-4 py-2 shadow me-2">
+                        <i class="bi bi-speedometer2 me-2"></i>Meu Painel
+                    </a>
+                    <a href="/receitas/nova" class="btn btn-dark border-2 fw-bold px-4 py-2 shadow">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Nova Receita
+                    </a>
+                <% } else { %>
+                    <a href="/login" class="btn btn-dark border-2 fw-bold px-4 py-2 shadow">
+                        <i class="bi bi-person-badge me-2"></i>Área Restrita
+                    </a>
+                    <a href="/portal/relatorio" class="btn btn-outline-dark border-2 fw-bold px-4 py-2 shadow-sm me-2">
+                        <i class="bi bi-graph-up-arrow me-2"></i>Ver Relatório
+                    </a>
+                <% } %>
             </div>
         </div>
     </header>
@@ -77,8 +89,8 @@
                                 <i class="bi bi-egg-fried"></i>
                             </div>
                             <h4 class="card-title fw-bold mb-4 nome-cat"><%= cat.nome %></h4>
-                            <a href="/portal/categoria/<%= cat.id %>" class="btn btn-warning border-dark border-2 fw-bold w-100">
-                                Ver Comentários <i class="bi bi-chevron-right"></i>
+                           <a href="/portal/categoria/<%= cat.id %>" class="btn btn-warning border-dark border-2 fw-bold w-100">
+                                Ver Receitas <i class="bi bi-chevron-right"></i>
                             </a>
                         </div>
                     </div>
@@ -91,9 +103,11 @@
         <div class="container text-center">
             <h5 class="fw-bold mb-3">DegustaUTF</h5>
             <p class="small mb-0 text-secondary">Projeto desenvolvido para avaliação acadêmica.</p>
-            <p class="small text-secondary">UTFPR - 2024</p>
+            <p class="small text-secondary">UTFPR - 2026</p>
         </div>
     </footer>
+
+    <script src="/js/theme.js"></script>
 
     <script>
         // Função de Pesquisa em Tempo Real
@@ -110,23 +124,6 @@
                 }
             }
         }
-
-        // Script do Tema
-        const btn = document.getElementById('themeBtn');
-        const icon = document.getElementById('themeIcon');
-        const html = document.documentElement;
-
-        btn.addEventListener('click', () => {
-            if (html.getAttribute('data-bs-theme') === 'light') {
-                html.setAttribute('data-bs-theme', 'dark');
-                icon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
-                btn.style.backgroundColor = '#ffc107'; btn.style.color = '#000'; btn.style.borderColor = '#fff';
-            } else {
-                html.setAttribute('data-bs-theme', 'light');
-                icon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
-                btn.style.backgroundColor = '#000'; btn.style.color = '#ffc107'; btn.style.borderColor = '#000';
-            }
-        });
     </script>
 </body>
 </html>

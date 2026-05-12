@@ -16,10 +16,10 @@ const comentarioSchema = new mongoose.Schema({
         min: 1, // A nota mínima é 1
         max: 5  // A nota máxima é 5 estrelas
     },
-    categoriaId: {
-        type: Number,
-        required: true // Para sabermos a qual categoria (1, 2 ou 3) esse comentário pertence
-    },
+   receitaId: {
+    type: Number,
+    required: true
+},
     dataCriacao: {
         type: Date,
         default: Date.now // O próprio MongoDB preenche a data e hora do momento exato

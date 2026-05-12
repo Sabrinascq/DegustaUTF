@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receitas: <%= categoria.nome %> - DegustaUTF</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/sketchy/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: var(--bs-body-bg); padding-bottom: 50px; }
+        .card { border-width: 2px; border-color: #000; transition: transform 0.2s; }
+        .card:hover { transform: scale(1.02); }
+        .navbar { border-bottom: 3px solid #000; }
+        [data-bs-theme="dark"] .card { border-color: #fff; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-warning mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-dark" href="/portal">
+                <i class="bi bi-arrow-left-circle-fill me-2"></i> Voltar
+            </a>
+            <span class="navbar-text fw-bold text-dark h4 mb-0">Categoria: <%= categoria.nome %></span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row g-4">
+            <% if (receitas.length === 0) { %>
+                <div class="col-12 text-center mt-5">
+                    <i class="bi bi-emoji-frown display-1 text-muted mb-3"></i>
+                    <h2>Poxa, ainda não temos receitas de <%= categoria.nome %>.</h2>
+                    <% if (usuarioLogado) { %>
+                        <a href="/receitas/nova" class="btn btn-warning border-dark border-2 fw-bold mt-3">Seja o primeiro a postar!</a>
+                    <% } %>
+                </div>
+            <% } else { %>
+                <% receitas.forEach(receita => { %>
+                    <div class="col-md-4">
+                        <div class="card shadow h-100">
+                            <% if (receita.midia_url) { %>
+                                <img src="<%= receita.midia_url %>" class="card-img-top border-bottom border-dark border-2" alt="<%= receita.nome %>" style="height: 200px; object-fit: cover;">
+                            <% } else { %>
+                                <div class="card-img-top bg-light border-bottom border-dark border-2 d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-image text-muted display-4"></i>
+                                </div>
+                            <% } %>
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold"><%= receita.nome %></h5>
+                                <a href="/receita/<%= receita.id %>" class="btn btn-dark border-2 fw-bold w-100 mt-3">Ver Receita Completa</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+
+    <script src="/js/theme.js"></script>
+</body>
+</html>

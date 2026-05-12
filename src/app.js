@@ -10,6 +10,8 @@ const portalController = require('./controllers/portalController');
 
 const app = express();
 
+const pool = require('./config/database');
+
 // Configurações do EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -49,8 +51,16 @@ const verificarAdmin = (req, res, next) => {
     }
 };
 
+const verificarLogin = (req, res, next) => {
+    if (req.session.usuarioLogado) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+};
+
 // --- ROTAS DO PAINEL ADMINISTRATIVO ---
-app.get('/admin/dashboard', verificarAdmin, adminController.renderDashboard);
+app.get('/admin/dashboard', verificarLogin, adminController.renderDashboard);
 app.post('/admin/categorias', verificarAdmin, adminController.cadastrarCategoria);
 app.post('/admin/habilidades', verificarAdmin, adminController.cadastrarHabilidade);
 app.post('/admin/alunos', verificarAdmin, adminController.cadastrarAluno);
@@ -64,6 +74,7 @@ app.post('/admin/categorias/editar', verificarAdmin, adminController.atualizarCa
 app.post('/admin/habilidades/editar', verificarAdmin, adminController.atualizarHabilidade);
 app.post('/admin/alunos/editar', verificarAdmin, adminController.atualizarAluno);
 
+
 // Atalho para o dashboard
 app.get('/dashboard', (req, res) => {
     res.redirect('/admin/dashboard');
@@ -74,8 +85,7 @@ app.get('/dashboard', (req, res) => {
 // Página inicial do portal
 app.get('/portal', portalController.index);
 
-// Ver os comentários de uma categoria específica
-app.get('/portal/categoria/:id', portalController.verComentarios);
+app.get('/portal/categoria/:id', portalController.verCategoria);
 
 // Salvar um comentário (A lógica de bloqueio está no EJS e no Controller)
 app.post('/portal/categoria/:id/comentar', portalController.salvarComentario);
@@ -90,6 +100,42 @@ app.get('/', (req, res) => {
 const receitaController = require('./controllers/receitaController');
 app.get('/receitas/nova', receitaController.renderizarFormulario);
 app.post('/receitas/cadastrar', receitaController.salvar);
+app.get('/receitas/nova', verificarLogin, receitaController.renderizarFormulario);
+app.post('/receitas/cadastrar', verificarLogin, receitaController.salvar);
+
+// Ver uma receita específica e seus comentários
+app.get('/receita/:id', portalController.verReceita);
+app.post('/receita/:id/comentar', portalController.salvarComentario);
+
+// --- ROTAS DE CRUD DE RECEITAS ---
+app.get('/receitas/editar/:id', verificarLogin, receitaController.renderEditar);
+app.post('/receitas/atualizar', verificarLogin, receitaController.atualizar);
+app.post('/receitas/excluir', verificarLogin, receitaController.excluir);
+
+// Rota pública para o relatório de habilidades
+app.get('/portal/relatorio', portalController.relatorioHabilidades);
+
+app.post('/admin/minhas-habilidades', verificarLogin, async (req, res) => {
+    const { habilidade_id, nivel } = req.body;
+    const aluno_id = req.session.usuarioLogado.id;
+    
+    // Query para inserir ou atualizar se já existir
+    const query = `
+        INSERT INTO aluno_habilidades (aluno_id, habilidade_id, nivel) 
+        VALUES ($1, $2, $3) 
+        ON CONFLICT (aluno_id, habilidade_id) DO UPDATE SET nivel = $3`;
+    
+    await pool.query(query, [aluno_id, habilidade_id, nivel]);
+    res.redirect('/admin/dashboard');
+});
+
+app.post('/admin/minhas-habilidades/excluir', verificarLogin, async (req, res) => {
+    const { habilidade_id } = req.body;
+    const aluno_id = req.session.usuarioLogado.id;
+    
+    await pool.query('DELETE FROM aluno_habilidades WHERE aluno_id = $1 AND habilidade_id = $2', [aluno_id, habilidade_id]);
+    res.redirect('/admin/dashboard');
+});
 
 // --- INICIALIZAÇÃO DO SERVIDOR ---
 const PORT = 3000;
