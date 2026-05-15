@@ -24,7 +24,7 @@ No desenvolvimento deste projeto foram utilizadas as linguagens:
 
 Para o armazenamento de dados e de informações foi utilizada dois bancos de dados:
 - PostgreSQL
--MongoDB
+- MongoDB
 
 **OUTRAS TECNOLOGIAS E MÉTODOS UTILIZADAS**
 
